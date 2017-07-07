@@ -8,12 +8,7 @@ import BookShelf from './BookShelf'
 
 class App extends React.Component {
     state = {
-        /**
-         * TODO: Instead of using this state variable to keep track of which page
-         * we're on, use the URL in the browser's address bar. This will ensure that
-         * users can use the browser's back and forward buttons to navigate between
-         * pages, as well as provide a good URL they can bookmark and share.
-         */
+        books: [],
         currentlyReading: [],
         wantToRead: [],
         read: []
@@ -21,11 +16,29 @@ class App extends React.Component {
 
     componentDidMount() {
         BooksAPI.getAll().then((books) => {
-            let currentlyReading = books.filter(book => book.shelf === "currentlyReading")
-            let wantToRead = books.filter(book => book.shelf === "wantToRead")
-            let read = books.filter(book => book.shelf === "read")
-            this.setState({ currentlyReading, wantToRead, read })
+            this.setState({ books })
+            this.updateShelves();
         })
+    }
+
+    updateShelves() {
+        const { books } = this.state
+        let currentlyReading = books.filter(book => book.shelf === "currentlyReading")
+        let wantToRead = books.filter(book => book.shelf === "wantToRead")
+        let read = books.filter(book => book.shelf === "read")
+        this.setState({ currentlyReading, wantToRead, read })
+    }
+
+    changeShelf = (event, book) => {
+        let books = this.state.books
+        books.forEach((b) => {
+            if(b === book) {
+                book.shelf = event.target.value
+            }
+        })
+        this.setState({ books })
+        this.updateShelves()
+        BooksAPI.update(book, event.target.value)
     }
 
     render() {
@@ -37,9 +50,9 @@ class App extends React.Component {
                         <Header/>
                         <div className="list-books-content">
                             <div>
-                                <BookShelf name="Currently Reading" books={currentlyReading}/>
-                                <BookShelf name="Want To Read" books={wantToRead}/>
-                                <BookShelf name="Read" books={read}/>
+                                <BookShelf name="Currently Reading" books={currentlyReading} handleUpdate={this.changeShelf}/>
+                                <BookShelf name="Want To Read" books={wantToRead} handleUpdate={this.changeShelf}/>
+                                <BookShelf name="Read" books={read} handleUpdate={this.changeShelf}/>
                             </div>
                         </div>
                         <div className="open-search">

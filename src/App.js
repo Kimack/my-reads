@@ -31,18 +31,32 @@ class App extends React.Component {
 
     changeShelf = (event, book) => {
         let books = this.state.books
-        books.forEach((b) => {
-            if (b === book) {
-                book.shelf = event.target.value
+        let newBook = true
+
+        books.map(b => {
+            if (b.id === book.id) {
+                newBook = false
             }
         })
+
+        if (newBook) {
+            books.push(book)
+        }
+
+        books.forEach((b) => {
+            if (b.id === book.id) {
+                b.shelf = event.target.value
+            }
+        })
+
         this.setState({books})
         this.updateShelves()
         BooksAPI.update(book, event.target.value)
     }
 
     render() {
-        const {currentlyReading, wantToRead, read} = this.state
+        const {currentlyReading, wantToRead, read, books} = this.state
+
         return (
             <div className="app">
                 <Route exact path="/" render={() => (
@@ -62,7 +76,7 @@ class App extends React.Component {
                     </div>
                 )}/>
                 <Route path="/search" render={() => (
-                    <SearchBooks/>
+                    <SearchBooks handleUpdate={this.changeShelf} books={books}/>
                 )}/>
             </div>
         )

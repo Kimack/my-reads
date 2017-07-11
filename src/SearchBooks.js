@@ -64,11 +64,6 @@ class SearchBooks extends Component {
                     {query && (
                         <BookShelf name={queryString} books={books} handleUpdate={handleUpdate}/>
                     )}
-                    {/*<ol className="books-grid">*/}
-                        {/*{books.length > 0 && books.map((book, index) => (*/}
-                            {/*<Books key={index} book={book} changeBookShelf={handleUpdate}/>*/}
-                        {/*))}*/}
-                    {/*</ol>*/}
                 </div>
             </div>
         )
